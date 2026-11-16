@@ -77,12 +77,20 @@ Nothing is built into `ara/install/`; `fyp-notes/ara-env.sh` sets every path.
 
 | Tool | Used | Ara pins | Why |
 |---|---|---|---|
-| Verilator | **5.008** from `../cva6/tools/verilator-v5.008` | 5.046 | Same simulator as the CVA6 results. Ara ran on 5.012 from Aug 2023 to Mar 2026; 5.008 has every option the `verilate` target uses (`--hierarchical`, `-Wno-ENUMVALUE`, ...). If 5.008 hits a Verilator bug, build 5.046 and note it here. |
+| Verilator | **5.008** from `../cva6/tools/verilator-v5.008/build-v5.008` (its build tree) | 5.046 | Same simulator as the CVA6 results. Ara ran on 5.012 from Aug 2023 to Mar 2026; 5.008 has every option the `verilate` target uses (`--hierarchical`, `-Wno-ENUMVALUE`, ...). If 5.008 hits a Verilator bug, build 5.046 and note it here. |
 | C compiler (apps) | Arch **clang 23.1.4** + **lld 23** (`clang lld llvm` packages) | LLVM 20 from source | Saves the LLVM build. Cycle counts can differ from Ara's published numbers with another compiler version. |
 | C library | Arch `riscv64-elf-newlib` + libgcc of `riscv64-elf-gcc` 16.2.0, multilib `rv64imafdc/lp64d` | newlib + compiler-rt from source | Clang flags: `--target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc` + `-L` to both library folders |
 | GCC (riscv-tests) | Arch `riscv64-elf-gcc` 16.2.0 | riscv-gnu-toolchain from source | Same libraries |
 | Python (data generators) | Arch `python-numpy` | `python-requirements.txt` | System package, no venv |
 | Spike | not used yet | `204b88de` + patch | Not needed for the Verilator smoke tests |
+
+Verilator 5.008 build tree instead of its installed copy: with `--hierarchical` (used by Ara, not
+by CVA6), 5.008 relaunches itself for each hierarchical block with
+`VERILATOR_ROOT=<prefix>/share/verilator`, where the installed 5.008 has no `verilator_bin`
+(`make install` puts it only in `<prefix>/bin`). First `verilate` run failed after 2 s with
+`share/verilator/verilator_bin: No such file or directory` (2026-11-17 01:36). The build tree has
+`bin/verilator_bin` and `include/` under one root, so `ara-env.sh` sets
+`VERILATOR_ROOT=.../build-v5.008`. Same binary: the install step only copies it.
 
 Arch's package list was out of date on 2026-11-16 (pacman 404s); fixed with `sudo pacman -Syu`.
 
@@ -124,14 +132,24 @@ From Ara's CI (`.github/workflows/ci.yml`), smallest config `2_lanes` (VLEN 2048
 
 CI runs 17 apps x 4 configs; the three apps above cover the integer and floating-point paths.
 
+## Problems met
+
+| Date | Step | Problem | Cause | Fix |
+|---|---|---|---|---|
+| 2026-11-17 | verilate | `share/verilator/verilator_bin: No such file or directory`, exit 2 after 2 s | 5.008 installed layout + `--hierarchical` (see Tools) | `VERILATOR_ROOT` = 5.008 build tree |
+
+Warning seen and accepted: `PINMISSING vmfpu.sv:1093 ... 'early_valid_o'`: the openhwgroup cvfpu
+has an extra output that Ara's VMFPU leaves unconnected (output only, no effect).
+
 ## Results
 
-| Date | Test | Result | Log |
+| Date | Step | Result | Log |
 |---|---|---|---|
-| | | | |
+| 2026-11-17 | apps (2_lanes) | hello_world, imatmul, fmatmul built, exit 0 | `logs/build-*-2_lanes.log` |
 
 ## Journal
 
+- **2026-11-17**: Smoke step `apps` passed on 2_lanes (clang 23.1.5 after `pacman -Syu`; CVA6 at `caea7968`). First `verilate` failed in 2 s: 5.008's installed layout breaks `--hierarchical`; switched `VERILATOR_ROOT` to 5.008's build tree.
 - **2026-11-17**: Tools decided: CVA6's Verilator 5.008, Arch clang/lld 23 with Arch newlib + libgcc (installed `lld`, `python-numpy`; `pacman -Syu` needed first). First test: `hello_world` (default 4-lane config) compiled and linked with clang 23 (9.9 KB, vector instructions in the dump). Added `ara-env.sh` and `run-smoke.sh`.
 - **2026-11-16**: Decided to use the FYP CVA6 fork instead of PULP's CVA6. Switched Bender to `../cva6` with version overrides, removed the CLIC ports, adapted VMFPU to the openhwgroup cvfpu. Elaboration check with slang: no new errors versus upstream. Smoke-test list taken from Ara's CI.
 - **2026-11-16**: Studied upstream Ara at `34bd3bc1`: submodules, Bender.lock, Makefiles. Found that Ara uses PULP's CVA6 `99eac9a6` (2024), not the FYP CVA6. Forked to Abdus-SK/ara, cloned to `~/FYP/fyp/ara`, reset to `34bd3bc1`, tagged and pushed `fyp-base`. No submodules fetched yet (by decision: `make git-submodules` pulls all of llvm-project). Wrote this journal.
