@@ -848,24 +848,22 @@ module vmfpu import ara_pkg::*; import rvv_pkg::*; import fpnew_pkg::*;
       Width        : 64,
       EnableVectors: 1'b1,
       EnableNanBox : 1'b1,
-      FpFmtMask    : {RVVF(FPUSupport), RVVD(FPUSupport), RVVH(FPUSupport), RVVB(FPUSupport), RVVHA(FPUSupport), RVVBA(FPUSupport)},
+      FpFmtMask    : {RVVF(FPUSupport), RVVD(FPUSupport), RVVH(FPUSupport), RVVB(FPUSupport), RVVHA(FPUSupport)}, // FYP: no FP8ALT in openhwgroup cvfpu
       IntFmtMask   : {logic'(RVVB(FPUSupport) || RVVBA(FPUSupport)), 1'b1, 1'b1, 1'b1}
     };
 
     // Implementation (number of registers etc)
     localparam fpu_implementation_t FPUImplementation = '{
       PipeRegs: '{
-        '{LatFCompEW32, LatFCompEW64, LatFCompEW16, LatFCompEW8, LatFCompEW16Alt, LatFCompEW8Alt},
+        '{LatFCompEW32, LatFCompEW64, LatFCompEW16, LatFCompEW8, LatFCompEW16Alt},
         '{default: LatFDivSqrt},
         '{default: LatFNonComp},
-        '{default: LatFConv},
-        '{default: LatFDotp}},
+        '{default: LatFConv}}, // FYP: openhwgroup cvfpu has no DOTP op group
       UnitTypes: '{
         '{default: PARALLEL}, // ADDMUL
         '{default: MERGED},   // DIVSQRT
         '{default: PARALLEL}, // NONCOMP
-        '{default: MERGED}, // CONV
-        '{default: DISABLED}}, // DOTP
+        '{default: MERGED}}, // CONV (FYP: no DOTP op group)
       PipeConfig: DISTRIBUTED
     };
 
@@ -1095,7 +1093,6 @@ module vmfpu import ara_pkg::*; import rvv_pkg::*; import fpnew_pkg::*;
     ) i_fpnew_bulk (
       .clk_i         (clk_i          ),
       .rst_ni        (rst_ni         ),
-      .hart_id_i     ('0             ),
       .flush_i       (1'b0           ),
       .rnd_mode_i    (fp_rm          ),
       .op_i          (fp_op          ),

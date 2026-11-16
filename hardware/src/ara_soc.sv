@@ -618,8 +618,9 @@ module ara_soc import axi_pkg::*; import ara_pkg::*; #(
     $error(
       "[ara] Cannot support byte-precision floating-point on Ara if CVA6 does not support it.");
 
-  if (RVVBA(FPUSupport) && !CVA6AraConfig.XF8ALT)
+  // FYP: the FYP CVA6 (openhwgroup cvfpu) has no alt-byte (FP8ALT) format.
+  if (RVVBA(FPUSupport))
     $error(
-      "[ara] Cannot support alt-byte-precision floating-point on Ara if CVA6 does not support it.");
+      "[ara] Alt-byte-precision floating-point is not supported with the FYP CVA6 FPU.");
 
 endmodule : ara_soc
