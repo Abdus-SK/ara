@@ -138,6 +138,7 @@ CI runs 17 apps x 4 configs; the three apps above cover the integer and floating
 |---|---|---|---|---|
 | 2026-11-17 | verilate | `share/verilator/verilator_bin: No such file or directory`, exit 2 after 2 s | 5.008 installed layout + `--hierarchical` (see Tools) | `VERILATOR_ROOT` = 5.008 build tree |
 | 2026-11-17 | rvtests | `rv64si/dirty.S:25: Error: unknown CSR 'sptbr'`; make stopped, so `rv64si-dirty` onwards and all ~170 vector tests (`rv64uv`) were never built (89 scalar tests ran, all passed) | Ara's riscv-tests copy uses `sptbr`, the pre-1.10 name of `satp`; GCC 16's binutils dropped it | `-Dsptbr=satp` in `RISCV_CC_GCC` (same CSR 0x180); `run-smoke.sh` builds with `make -k` |
+| 2026-11-17 | rvtests, run 2 | 271/271 passed (177/177 vector) but `build exit=2`: `rv64si-ara-ma_fetch` not built (1 of Ara's 272 tests) | `ma_fetch.S:187` reads `sbadaddr`, pre-1.10 name of `stval` (and `mbadaddr` = `mtval`) | `-Dsbadaddr=stval -Dmbadaddr=mtval` |
 
 Warning seen and accepted: `PINMISSING vmfpu.sv:1093 ... 'early_valid_o'`: the openhwgroup cvfpu
 has an extra output that Ara's VMFPU leaves unconnected (output only, no effect).
@@ -151,7 +152,8 @@ has an extra output that Ara's VMFPU leaves unconnected (output only, no effect)
 | 2026-11-17 | simv hello_world | "Ariane says Hello!", SUCCESS (tohost 0), 1,188 cycles | `logs/simv-hello_world-2_lanes.log` |
 | 2026-11-17 | simv imatmul (int64) | 128x128x128: 1,069,263 cycles, 3.92 OP/cycle, 98.1 % of 4 OP/cycle; result Passed; run 1,596,028 cycles, 7 min 40 s | `logs/simv-imatmul-2_lanes.log` |
 | 2026-11-17 | simv fmatmul (fp64) | 128x128x128: 1,064,284 cycles, 3.94 FLOP/cycle, 98.5 %; result Passed; run 1,733,870 cycles, 8 min 14 s | `logs/simv-fmatmul-2_lanes.log` |
-| 2026-11-17 | riscv-tests, first run | 89/89 scalar tests passed (rv64ui, um, uc, uf, ud, si-csr); build stopped at `rv64si-dirty`, vector tests not built | `logs/riscv-tests-2_lanes.log` |
+| 2026-11-17 | riscv-tests, run 1 | 89/89 scalar tests passed (rv64ui, um, uc, uf, ud, si-csr); build stopped at `rv64si-dirty`, vector tests not built | (log overwritten by run 2) |
+| 2026-11-17 | riscv-tests, run 2 | **271/271 passed**, incl. **177/177 vector (rv64uv)**; `rv64si-ara-ma_fetch` not built (`sbadaddr`) | (log overwritten by run 3) |
 
 Matmul cycles per size (app timer), 2 lanes:
 
@@ -168,7 +170,7 @@ fmatmul passing is the check for the VMFPU change (openhwgroup cvfpu).
 
 ## Journal
 
-- **2026-11-17**: verilate passed (2 min 15 s); hello_world, imatmul, fmatmul passed on Ara + FYP CVA6 (98 % utilisation at 128x128). riscv-tests: 89/89 scalar passed, build stopped on `sptbr`; fixed with `-Dsptbr=satp` and `make -k`.
+- **2026-11-17**: verilate passed (2 min 15 s); hello_world, imatmul, fmatmul passed on Ara + FYP CVA6 (98 % utilisation at 128x128). riscv-tests: 89/89 scalar passed, build stopped on `sptbr`; fixed with `-Dsptbr=satp` and `make -k`. Run 2: 271/271 passed incl. all 177 vector tests; only `ma_fetch` not built (`sbadaddr`), fixed with `-Dsbadaddr=stval -Dmbadaddr=mtval`.
 - **2026-11-17**: Smoke step `apps` passed on 2_lanes (clang 23.1.5 after `pacman -Syu`; CVA6 at `caea7968`). First `verilate` failed in 2 s: 5.008's installed layout breaks `--hierarchical`; switched `VERILATOR_ROOT` to 5.008's build tree.
 - **2026-11-17**: Tools decided: CVA6's Verilator 5.008, Arch clang/lld 23 with Arch newlib + libgcc (installed `lld`, `python-numpy`; `pacman -Syu` needed first). First test: `hello_world` (default 4-lane config) compiled and linked with clang 23 (9.9 KB, vector instructions in the dump). Added `ara-env.sh` and `run-smoke.sh`.
 - **2026-11-16**: Decided to use the FYP CVA6 fork instead of PULP's CVA6. Switched Bender to `../cva6` with version overrides, removed the CLIC ports, adapted VMFPU to the openhwgroup cvfpu. Elaboration check with slang: no new errors versus upstream. Smoke-test list taken from Ara's CI.
