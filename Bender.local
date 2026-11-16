@@ -1,0 +1,8 @@
+# FYP: CVA6 comes from the FYP fork (../cva6, see Bender.yml). That CVA6 asks for
+# axi ^0.31 and common_cells ^1.23; keep the versions Ara was tested with
+# (Bender.lock at fyp-base).
+overrides:
+  axi:          { git: "https://github.com/pulp-platform/axi.git",          rev: 853ede23b2a9837951b74dbdc6d18c3eef5bac7d }
+  common_cells: { git: "https://github.com/pulp-platform/common_cells.git", rev: c27bce39ebb2e6bae52f60960814a2afca7bd4cb }
+  tech_cells_generic:  { git: "https://github.com/pulp-platform/tech_cells_generic.git",  rev: 7968dd6e6180df2c644636bc6d2908a49f2190cf }
+  common_verification: { git: "https://github.com/pulp-platform/common_verification.git", rev: 9c07fa860593b2caabd9b5681740c25fac04b878 }

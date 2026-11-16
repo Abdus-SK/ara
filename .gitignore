@@ -19,7 +19,6 @@ obj_dir/*
 /tmp*
 *.dasm
 /Bender.lock
-/Bender.local
 build/
 trace_*
 mems
