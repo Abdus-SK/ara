@@ -40,18 +40,19 @@ do_simv() {
 }
 
 do_rvtests() {
-  local log="$LOGS/riscv-tests-$CFG.log" pass=0 fail=0 t
-  { header rvtests; make -C apps riscv_tests; echo "build exit=$?"; } 2>&1 | tee "$log"
+  local log="$LOGS/riscv-tests-$CFG.log" t
+  { header rvtests; make -k -C apps riscv_tests; echo "build exit=$?"; } 2>&1 | tee "$log"
   mkdir -p hardware/build/rvtests
   for t in apps/bin/rv64*-ara-*; do
     case $t in *.dump) continue;; esac
     if "$VTOP" -l ram,"$t",elf > "hardware/build/rvtests/$(basename "$t").trace" 2>&1; then
-      pass=$((pass+1)); echo "PASS $(basename "$t")"
+      echo "PASS $(basename "$t")"
     else
-      fail=$((fail+1)); echo "FAIL $(basename "$t")"
+      echo "FAIL $(basename "$t")"
     fi
   done 2>&1 | tee -a "$log"
-  echo "riscv-tests: $(grep -c '^PASS' "$log") passed, $(grep -c '^FAIL' "$log") failed" | tee -a "$log"
+  echo "riscv-tests: $(grep -c '^PASS' "$log") passed, $(grep -c '^FAIL' "$log") failed" \
+       "(vector rv64uv: $(grep -c '^PASS rv64uv' "$log") passed, $(grep -c '^FAIL rv64uv' "$log") failed)" | tee -a "$log"
 }
 
 case $STEP in

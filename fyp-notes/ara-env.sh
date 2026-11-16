@@ -30,4 +30,7 @@ FYP_LIBGCC_DIR="$(dirname "$(riscv64-elf-gcc -march=rv64imafdc -mabi=lp64d -prin
 export RISCV_PREFIX=/usr/bin/
 export LLVM_FLAGS="--target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc -L$FYP_NEWLIB_LIB -L$FYP_LIBGCC_DIR -march=rv64gcv_zfh_zvfh -mabi=lp64d -mno-relax -fuse-ld=lld"
 # riscv-tests are compiled with GCC (Ara's riscv-tests flow); same libraries.
-export RISCV_CC_GCC="riscv64-elf-gcc -L$FYP_NEWLIB_LIB -L$FYP_LIBGCC_DIR"
+# -Dsptbr=satp: Ara's riscv-tests copy still writes the CSR by its pre-2017 name (sptbr,
+# renamed satp in privileged spec 1.10); binutils of GCC 16 no longer knows the old name.
+# Same CSR number (0x180), so the tests are unchanged. The .S files go through cpp.
+export RISCV_CC_GCC="riscv64-elf-gcc -L$FYP_NEWLIB_LIB -L$FYP_LIBGCC_DIR -Dsptbr=satp"
