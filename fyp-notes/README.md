@@ -153,7 +153,12 @@ has an extra output that Ara's VMFPU leaves unconnected (output only, no effect)
 | 2026-11-17 | simv imatmul (int64) | 128x128x128: 1,069,263 cycles, 3.92 OP/cycle, 98.1 % of 4 OP/cycle; result Passed; run 1,596,028 cycles, 7 min 40 s | `logs/simv-imatmul-2_lanes.log` |
 | 2026-11-17 | simv fmatmul (fp64) | 128x128x128: 1,064,284 cycles, 3.94 FLOP/cycle, 98.5 %; result Passed; run 1,733,870 cycles, 8 min 14 s | `logs/simv-fmatmul-2_lanes.log` |
 | 2026-11-17 | riscv-tests, run 1 | 89/89 scalar tests passed (rv64ui, um, uc, uf, ud, si-csr); build stopped at `rv64si-dirty`, vector tests not built | (log overwritten by run 2) |
-| 2026-11-17 | riscv-tests, run 2 | **271/271 passed**, incl. **177/177 vector (rv64uv)**; `rv64si-ara-ma_fetch` not built (`sbadaddr`) | (log overwritten by run 3) |
+| 2026-11-17 | riscv-tests, run 2 | 271/271 passed, incl. 177/177 vector (rv64uv); `rv64si-ara-ma_fetch` not built (`sbadaddr`) | (log overwritten by run 3) |
+| 2026-11-17 | **riscv-tests, run 3 (final)** | **272/272 passed, build exit 0**: 177/177 vector (rv64uv) + 95 scalar (rv64ui 51, um 13, uc 1, uf 11, ud 12, si 7 incl. ma_fetch); 23 min | `logs/riscv-tests-2_lanes.log` |
+
+**Smoke-test status (2_lanes): all passed.** Ara + FYP CVA6 builds and runs Ara's CI set: hello_world,
+imatmul, fmatmul and all 272 riscv-tests Ara defines (Ara's own list in `apps/common/riscv_tests.mk`;
+rv64ua atomics are not in it).
 
 Matmul cycles per size (app timer), 2 lanes:
 
@@ -170,6 +175,7 @@ fmatmul passing is the check for the VMFPU change (openhwgroup cvfpu).
 
 ## Journal
 
+- **2026-11-17**: riscv-tests run 3: 272/272 passed (177/177 vector), build exit 0. Smoke set complete on 2_lanes. Logs committed (`.gitignore` ignores `*log`, so `fyp-notes/logs/` is un-ignored).
 - **2026-11-17**: verilate passed (2 min 15 s); hello_world, imatmul, fmatmul passed on Ara + FYP CVA6 (98 % utilisation at 128x128). riscv-tests: 89/89 scalar passed, build stopped on `sptbr`; fixed with `-Dsptbr=satp` and `make -k`. Run 2: 271/271 passed incl. all 177 vector tests; only `ma_fetch` not built (`sbadaddr`), fixed with `-Dsbadaddr=stval -Dmbadaddr=mtval`.
 - **2026-11-17**: Smoke step `apps` passed on 2_lanes (clang 23.1.5 after `pacman -Syu`; CVA6 at `caea7968`). First `verilate` failed in 2 s: 5.008's installed layout breaks `--hierarchical`; switched `VERILATOR_ROOT` to 5.008's build tree.
 - **2026-11-17**: Tools decided: CVA6's Verilator 5.008, Arch clang/lld 23 with Arch newlib + libgcc (installed `lld`, `python-numpy`; `pacman -Syu` needed first). First test: `hello_world` (default 4-lane config) compiled and linked with clang 23 (9.9 KB, vector instructions in the dump). Added `ara-env.sh` and `run-smoke.sh`.
@@ -178,6 +184,6 @@ fmatmul passing is the check for the VMFPU change (openhwgroup cvfpu).
 
 ## Next steps
 
-1. `make -C hardware checkout apply-patches` (Bender; CVA6 comes from `../cva6`).
-2. `bash fyp-notes/run-smoke.sh apps`, then `verilate`, `simv`, `rvtests`; fix problems one commit at a time, logging each here.
-3. Record results in the Results table.
+1. Optional: same smoke set on `4_lanes` (default config) to check the swap at another size.
+2. Optional: build Ara's pinned Verilator 5.046 and rerun, to rule out 5.008 effects before quoting numbers.
+3. Fair scalar-vs-vector comparison: the same matmul (size, data type, -O level) on CVA6 alone and on Ara.

@@ -34,3 +34,7 @@ pyenv_ara/
 docs/build/
 docs/source/_templates/
 apps/_*
+
+# FYP: keep the smoke-test evidence logs (the *log rule above hides them)
+!/fyp-notes/logs/
+!/fyp-notes/logs/*.log
