@@ -1,0 +1,69 @@
+# 2026-11-17 10:17:05  step=compare  config=2_lanes
+# ara  81a3b15  cva6 caea7968
+# Verilator 5.008 2023-03-04 rev v5.008 (mod)
+# clang version 23.1.5
+# riscv64-elf-gcc (Arch Linux Repositories) 16.2.0
+# FYP_MAX_N=32
+make: Entering directory '/home/BlazeringNoctal/FYP/fyp/ara/apps'
+cd fyp_matmul_cmp && if [ -d script ]; then python3 script/gen_data.py  > data.S ; else touch data.S; fi
+/usr/bin/clang --target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc -L/usr/riscv64-elf/lib/rv64imafdc/lp64d -L/usr/lib/gcc/riscv64-elf/16.2.0/rv64imafdc/lp64d -march=rv64gcv_zfh_zvfh -mabi=lp64d -mno-relax -fuse-ld=lld -fno-vectorize -mllvm -scalable-vectorization=off -mllvm -riscv-v-vector-bits-min=0 -mno-implicit-float -mcmodel=medany -I/home/BlazeringNoctal/FYP/fyp/ara/apps/common -O3 -ffast-math -fno-common -fno-builtin-printf -DFYP_MAX_N=32 -DNR_LANES=2 -DVLEN=2048 -Wunused-variable -Wall -Wextra -Wno-unused-command-line-argument  -ffunction-sections -fdata-sections -std=gnu99 -c fyp_matmul_cmp/data.S -o fyp_matmul_cmp/data.S.o
+/usr/bin/clang --target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc -L/usr/riscv64-elf/lib/rv64imafdc/lp64d -L/usr/lib/gcc/riscv64-elf/16.2.0/rv64imafdc/lp64d -march=rv64gcv_zfh_zvfh -mabi=lp64d -mno-relax -fuse-ld=lld -fno-vectorize -mllvm -scalable-vectorization=off -mllvm -riscv-v-vector-bits-min=0 -mno-implicit-float -mcmodel=medany -I/home/BlazeringNoctal/FYP/fyp/ara/apps/common -O3 -ffast-math -fno-common -fno-builtin-printf -DFYP_MAX_N=32 -DNR_LANES=2 -DVLEN=2048 -Wunused-variable -Wall -Wextra -Wno-unused-command-line-argument  -ffunction-sections -fdata-sections -std=gnu99 -c fyp_matmul_cmp/kernel/scalar_kernels.c -o fyp_matmul_cmp/kernel/scalar_kernels.c.o
+/usr/bin/clang --target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc -L/usr/riscv64-elf/lib/rv64imafdc/lp64d -L/usr/lib/gcc/riscv64-elf/16.2.0/rv64imafdc/lp64d -march=rv64gcv_zfh_zvfh -mabi=lp64d -mno-relax -fuse-ld=lld -fno-vectorize -mllvm -scalable-vectorization=off -mllvm -riscv-v-vector-bits-min=0 -mno-implicit-float -mcmodel=medany -I/home/BlazeringNoctal/FYP/fyp/ara/apps/common -O3 -ffast-math -fno-common -fno-builtin-printf -DFYP_MAX_N=32 -DNR_LANES=2 -DVLEN=2048 -Wunused-variable -Wall -Wextra -Wno-unused-command-line-argument  -ffunction-sections -fdata-sections -std=gnu99 -c fyp_matmul_cmp/kernel/vector_kernels.c -o fyp_matmul_cmp/kernel/vector_kernels.c.o
+chmod +x /home/BlazeringNoctal/FYP/fyp/ara/apps/common/script/align_sections.sh
+rm -f /home/BlazeringNoctal/FYP/fyp/ara/apps/common/link.ld && cp /home/BlazeringNoctal/FYP/fyp/ara/apps/common/arch.link.ld /home/BlazeringNoctal/FYP/fyp/ara/apps/common/link.ld
+/home/BlazeringNoctal/FYP/fyp/ara/apps/common/script/align_sections.sh 2 /home/BlazeringNoctal/FYP/fyp/ara/apps/common/link.ld
+/usr/bin/clang --target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc -L/usr/riscv64-elf/lib/rv64imafdc/lp64d -L/usr/lib/gcc/riscv64-elf/16.2.0/rv64imafdc/lp64d -march=rv64gcv_zfh_zvfh -mabi=lp64d -mno-relax -fuse-ld=lld -fno-vectorize -mllvm -scalable-vectorization=off -mllvm -riscv-v-vector-bits-min=0 -mno-implicit-float -mcmodel=medany -I/home/BlazeringNoctal/FYP/fyp/ara/apps/common -O3 -ffast-math -fno-common -fno-builtin-printf -DFYP_MAX_N=32 -DNR_LANES=2 -DVLEN=2048 -Wunused-variable -Wall -Wextra -Wno-unused-command-line-argument  -ffunction-sections -fdata-sections -std=gnu99 -c fyp_matmul_cmp/main.c -o fyp_matmul_cmp/main.c.o
+mkdir -p bin/
+/usr/bin/clang -Iinclude --target=riscv64-unknown-elf --sysroot=/usr/riscv64-elf -rtlib=libgcc -L/usr/riscv64-elf/lib/rv64imafdc/lp64d -L/usr/lib/gcc/riscv64-elf/16.2.0/rv64imafdc/lp64d -march=rv64gcv_zfh_zvfh -mabi=lp64d -mno-relax -fuse-ld=lld -fno-vectorize -mllvm -scalable-vectorization=off -mllvm -riscv-v-vector-bits-min=0 -mno-implicit-float -mcmodel=medany -I/home/BlazeringNoctal/FYP/fyp/ara/apps/common -O3 -ffast-math -fno-common -fno-builtin-printf -DFYP_MAX_N=32 -DNR_LANES=2 -DVLEN=2048 -Wunused-variable -Wall -Wextra -Wno-unused-command-line-argument  -ffunction-sections -fdata-sections -std=gnu99 -o bin/fyp_matmul_cmp fyp_matmul_cmp/kernel/scalar_kernels.c.o fyp_matmul_cmp/kernel/vector_kernels.c.o fyp_matmul_cmp/main.c.o fyp_matmul_cmp/data.S.o common/crt0-llvm.S.o common/printf-llvm.c.o common/string-llvm.c.o common/serial-llvm.c.o common/util-llvm.c.o -static -nostartfiles -lm -Wl,--gc-sections -T/home/BlazeringNoctal/FYP/fyp/ara/apps/common/link.ld
+ld.lld: warning: ignoring memory region assignment for non-allocatable section '.comment'
+/usr/bin/llvm-objdump --mattr=v -D bin/fyp_matmul_cmp > bin/fyp_matmul_cmp.dump
+/usr/bin/llvm-strip bin/fyp_matmul_cmp -S --strip-unneeded
+rm fyp_matmul_cmp/main.c.o
+make: Leaving directory '/home/BlazeringNoctal/FYP/fyp/ara/apps'
+build exit=0
+make: Entering directory '/home/BlazeringNoctal/FYP/fyp/ara/hardware'
+which: no questa-2021.3 in (/home/BlazeringNoctal/FYP/fyp/cva6/tools/verilator-v5.008/build-v5.008/bin:/home/BlazeringNoctal/.local/bin:/home/BlazeringNoctal/altera_lite/25.1std/quartus/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+Makefile:83: "Specified QuestaSim version (questa-2021.3) not found in PATH /home/BlazeringNoctal/FYP/fyp/cva6/tools/verilator-v5.008/build-v5.008/bin:/home/BlazeringNoctal/.local/bin:/home/BlazeringNoctal/altera_lite/25.1std/quartus/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl"
+build/verilator/Vara_tb_verilator  -l ram,/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp,elf
+Program header number 0 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' low is 80000000
+Program header number 0 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' high is 80002273
+Program header number 1 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' high is 8000227f
+Program header number 2 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' high is 800027ff
+Program header number 3 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' high is 80012807
+Program header number 4 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' is not of type PT_LOAD; ignoring.
+Program header number 5 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fyp_matmul_cmp' is not of type PT_LOAD; ignoring.
+Set `ram TOP.ara_tb_verilator.dut.i_ara_soc.i_dram 8 0x80000000 0x100000 write with offset: 0x0 write with size: 0x12808
+Simulation of Ara
+=================
+
+
+Simulation running, end by pressing CTRL-c.
+
+=== FYP matmul: CVA6 scalar vs Ara vector (NR_LANES=2, VLEN=2048, max n=32) ===
+Warm-up run, then timed run (cycle counter, fence first).
+cyc/MAC = scalar cycles / n^3; util = vector OP/cycle / (2*NR_LANES).
+int64 n=  4  scalar      1086 cyc ( 16.97 cyc/MAC)  vector      412 cyc (  7.8% util)  speedup    2.64x  check ok
+int64 n=  8  scalar      6843 cyc ( 13.37 cyc/MAC)  vector      715 cyc ( 35.8% util)  speedup    9.57x  check ok
+int64 n= 16  scalar     49458 cyc ( 12.07 cyc/MAC)  vector     3151 cyc ( 65.0% util)  speedup   15.70x  check ok
+int64 n= 32  scalar    414890 cyc ( 12.66 cyc/MAC)  vector    18292 cyc ( 89.6% util)  speedup   22.68x  check ok
+fp64  n=  4  scalar       954 cyc ( 14.91 cyc/MAC)  vector      363 cyc (  8.8% util)  speedup    2.63x  check ok (max rel diff 0.000 e-15)
+fp64  n=  8  scalar      5794 cyc ( 11.32 cyc/MAC)  vector      722 cyc ( 35.5% util)  speedup    8.02x  check ok (max rel diff 0.000 e-15)
+fp64  n= 16  scalar     41240 cyc ( 10.07 cyc/MAC)  vector     3120 cyc ( 65.6% util)  speedup   13.22x  check ok (max rel diff 0.000 e-15)
+fp64  n= 32  scalar    349897 cyc ( 10.68 cyc/MAC)  vector    18303 cyc ( 89.5% util)  speedup   19.12x  check ok (max rel diff 0.000 e-15)
+=== PASSED: 0 mismatching elements ===
+[hw-cycles]:           0
+[4023896] -Info: ara_tb_verilator.sv:51: Assertion failed in TOP.ara_tb_verilator: Core Test *** SUCCESS *** (tohost = 0)
+- /home/BlazeringNoctal/FYP/fyp/ara/hardware/tb/ara_tb_verilator.sv:54: Verilog $finish
+Received $finish() from Verilog, shutting down simulation.
+
+Simulation statistics
+=====================
+Executed cycles:  1eb32c
+Wallclock time:   412.295 s
+Simulation speed: 4879.87 cycles/s (4.87987 kHz)
+make: Leaving directory '/home/BlazeringNoctal/FYP/fyp/ara/hardware'
+
+real	6m52.454s
+user	6m52.049s
+sys	0m0.244s
+exit=0
