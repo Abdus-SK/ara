@@ -1,0 +1,35 @@
+# Claude's workspace reference run, 2026-11-17: Verilator 5.020 (Debian, kit-style VERILATOR_ROOT), clang 18.1.3, picolibc 1.8.6 + libgcc 13.2 (rv64iafd/lp64d), config 2_lanes, FYP_MAX_N=32
+# ara b143de1 + uncommitted fyp_matmul_cmp (this commit); cva6 3e5ced3a
+Simulation of Ara
+=================
+
+
+Simulation running, end by pressing CTRL-c.
+
+=== FYP matmul: CVA6 scalar vs Ara vector (NR_LANES=2, VLEN=2048, max n=32) ===
+Warm-up run, then timed run (cycle counter, fence first).
+cyc/MAC = scalar cycles / n^3; util = vector OP/cycle / (2*NR_LANES).
+int64 n=  4  scalar      1060 cyc ( 16.56 cyc/MAC)  vector      385 cyc (  8.3% util)  speedup    2.75x  check ok
+int64 n=  8  scalar      6757 cyc ( 13.20 cyc/MAC)  vector      715 cyc ( 35.8% util)  speedup    9.45x  check ok
+int64 n= 16  scalar     49192 cyc ( 12.01 cyc/MAC)  vector     3110 cyc ( 65.9% util)  speedup   15.82x  check ok
+int64 n= 32  scalar    412504 cyc ( 12.59 cyc/MAC)  vector    18162 cyc ( 90.2% util)  speedup   22.71x  check ok
+fp64  n=  4  scalar       957 cyc ( 14.95 cyc/MAC)  vector      373 cyc (  8.6% util)  speedup    2.57x  check ok (max rel diff 0.000 e-15)
+fp64  n=  8  scalar      5733 cyc ( 11.20 cyc/MAC)  vector      728 cyc ( 35.2% util)  speedup    7.88x  check ok (max rel diff 0.000 e-15)
+fp64  n= 16  scalar     40989 cyc ( 10.01 cyc/MAC)  vector     3074 cyc ( 66.6% util)  speedup   13.33x  check ok (max rel diff 0.000 e-15)
+fp64  n= 32  scalar    347983 cyc ( 10.62 cyc/MAC)  vector    18167 cyc ( 90.2% util)  speedup   19.15x  check ok (max rel diff 0.000 e-15)
+=== PASSED: 0 mismatching elements ===
+[hw-cycles]:           0
+[4056886] -Info: ara_tb_verilator.sv:51: TOP.ara_tb_verilator: Core Test *** SUCCESS *** (tohost = 0)
+- /root/ref/fork-ara/hardware/tb/ara_tb_verilator.sv:54: Verilog $finish
+Received $finish() from Verilog, shutting down simulation.
+
+Simulation statistics
+=====================
+Executed cycles:  1ef39b
+Wallclock time:   303.463 s
+Simulation speed: 6684.32 cycles/s (6.68432 kHz)
+
+real	5m3.565s
+user	5m2.180s
+sys	0m0.461s
+exit=0

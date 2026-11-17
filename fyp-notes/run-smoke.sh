@@ -2,6 +2,8 @@
 # Ara smoke tests (the CI set) on the FYP CVA6.
 # Usage: bash fyp-notes/run-smoke.sh [step] [config]
 #   step:   apps | verilate | simv | rvtests | all   (default all)
+#           compare: CVA6 scalar vs Ara vector matmul (app fyp_matmul_cmp; not part of all;
+#           needs the verilate step; FYP_MAX_N=64 in the environment for the 64x64 case)
 #   config: a file in config/ without .mk            (default 2_lanes)
 # Logs go to fyp-notes/logs/, one per step, with tool versions at the top.
 STEP=${1:-all}
@@ -55,11 +57,21 @@ do_rvtests() {
        "(vector rv64uv: $(grep -c '^PASS rv64uv' "$log") passed, $(grep -c '^FAIL rv64uv' "$log") failed)" | tee -a "$log"
 }
 
+do_compare() {
+  local app=fyp_matmul_cmp max=${FYP_MAX_N:-32}
+  local log="$LOGS/compare-matmul-n$max-$CFG.log"
+  rm -f apps/bin/$app apps/bin/$app.dump
+  { header compare; echo "# FYP_MAX_N=$max"
+    make -C apps bin/$app ENV_DEFINES=-DFYP_MAX_N=$max && echo "build exit=0" || echo "build exit=$?"
+    time make -C hardware simv app=$app; echo "exit=$?"; } 2>&1 | tee "$log"
+}
+
 case $STEP in
   apps) do_apps ;;
   verilate) do_verilate ;;
   simv) do_simv ;;
   rvtests) do_rvtests ;;
+  compare) do_compare ;;
   all) do_apps; do_verilate; do_simv; do_rvtests ;;
   *) echo "unknown step: $STEP"; exit 1 ;;
 esac

@@ -132,12 +132,55 @@ From Ara's CI (`.github/workflows/ci.yml`), smallest config `2_lanes` (VLEN 2048
 
 CI runs 17 apps x 4 configs; the three apps above cover the integer and floating-point paths.
 
+## Scalar vs vector matmul (like-for-like)
+
+App `apps/fyp_matmul_cmp` (FYP, new): C = A x B for n = 4, 8, ... `FYP_MAX_N` (default 32),
+int64 and fp64, run twice per kernel (warm-up, then timed) on the same simulated hardware:
+
+- **Scalar** = plain C triple loop on CVA6 alone (`kernel/scalar_kernels.c`; no vector
+  instructions, checked in the disassembly: 7 instructions per multiply-add for fp64).
+- **Vector** = Ara, with the unchanged `imatmul`/`fmatmul` kernels of the smoke tests
+  (`kernel/vector_kernels.c` includes their source files).
+- Same compiler and flags, same inputs (generated in C with a fixed-seed generator, so no data
+  file), same timer (`fence; csrr cycle`), results compared element by element (int64 exact,
+  fp64 relative difference <= 1e-12).
+
+Run: `bash fyp-notes/run-smoke.sh compare` (needs the `verilate` step); log
+`logs/compare-matmul-n32-2_lanes.log`. `FYP_MAX_N=64 bash fyp-notes/run-smoke.sh compare` adds
+the 64x64 case (about 12 M more simulated cycles, about 1 h on the laptop).
+
+Caveats for the report:
+- CVA6 here is built with Ara's config `cv64a6_imafdcv_sv39`: 4 KB I-cache, 8 KB D-cache
+  (256-bit lines), no B/Zcb/ZiCond/ZKN. The FYP base config `cv64a6_imafdc_sv39` has 16 KB /
+  32 KB. So the scalar numbers are for the smaller CVA6.
+- Cross-check with the CVA6-only baseline (fp64 8x8, gcc -O2, 3,960 cycles, 3,578 instructions):
+  here 5,733 cycles (Claude's workspace) for the same 7 instructions per multiply-add, so CVA6
+  retires about 0.62 instead of 0.90 instructions per cycle in this build. Cause not
+  established (candidates: the config differences above, the SoC memory path, the timer).
+- Reading `instret` or `minstret` traps (illegal instruction, `mtval` = the csrr) in this Ara
+  build of CVA6, while `cycle` works; so the app reports cycles only. Not explained yet.
+
+Reference run in Claude's workspace (Verilator 5.020, clang 18, picolibc; not the laptop tools,
+so laptop numbers can differ slightly), 2_lanes, all results matching (fp64 bit-identical):
+
+| n | int64 scalar | int64 vector | speedup | fp64 scalar | fp64 vector | speedup |
+|---|---|---|---|---|---|---|
+| 4 | 1,060 | 385 | 2.75x | 957 | 373 | 2.57x |
+| 8 | 6,757 | 715 | 9.45x | 5,733 | 728 | 7.88x |
+| 16 | 49,192 | 3,110 | 15.82x | 40,989 | 3,074 | 13.33x |
+| 32 | 412,504 | 18,162 | 22.71x | 347,983 | 18,167 | 19.15x |
+
+Whole run: 4,056,886 cycles (about 10 min at 6.4 kHz in the workspace; expect about 20 min on the
+laptop at ~3.5 kHz). Log: `logs/compare-matmul-n32-2_lanes-claude-workspace.log`.
+
 ## Problems met
 
 | Date | Step | Problem | Cause | Fix |
 |---|---|---|---|---|
 | 2026-11-17 | verilate | `share/verilator/verilator_bin: No such file or directory`, exit 2 after 2 s | 5.008 installed layout + `--hierarchical` (see Tools) | `VERILATOR_ROOT` = 5.008 build tree |
 | 2026-11-17 | rvtests | `rv64si/dirty.S:25: Error: unknown CSR 'sptbr'`; make stopped, so `rv64si-dirty` onwards and all ~170 vector tests (`rv64uv`) were never built (89 scalar tests ran, all passed) | Ara's riscv-tests copy uses `sptbr`, the pre-1.10 name of `satp`; GCC 16's binutils dropped it | `-Dsptbr=satp` in `RISCV_CC_GCC` (same CSR 0x180); `run-smoke.sh` builds with `make -k` |
+| 2026-11-17 | compare (Claude's workspace) | `rdinstret` / `minstret` read traps, mcause 2 | unknown (CVA6 in Ara build) | app reports cycles only |
+| 2026-11-17 | verilate (Claude's workspace, Debian Verilator 5.020) | same `--hierarchical` relaunch failure as on the laptop | installed layout, as above (not 5.008-specific) | kit-style folder as `VERILATOR_ROOT` |
 | 2026-11-17 | rvtests, run 2 | 271/271 passed (177/177 vector) but `build exit=2`: `rv64si-ara-ma_fetch` not built (1 of Ara's 272 tests) | `ma_fetch.S:187` reads `sbadaddr`, pre-1.10 name of `stval` (and `mbadaddr` = `mtval`) | `-Dsbadaddr=stval -Dmbadaddr=mtval` |
 
 Warning seen and accepted: `PINMISSING vmfpu.sv:1093 ... 'early_valid_o'`: the openhwgroup cvfpu
@@ -175,6 +218,7 @@ fmatmul passing is the check for the VMFPU change (openhwgroup cvfpu).
 
 ## Journal
 
+- **2026-11-17**: Added `apps/fyp_matmul_cmp` (scalar CVA6 vs Ara on the same hardware) and a `compare` step; tested in Claude's workspace up to 32x32: all results match, Ara 9.45x (int64) / 7.88x (fp64) faster at 8x8, 22.7x / 19.2x at 32x32.
 - **2026-11-17**: riscv-tests run 3: 272/272 passed (177/177 vector), build exit 0. Smoke set complete on 2_lanes. Logs committed (`.gitignore` ignores `*log`, so `fyp-notes/logs/` is un-ignored).
 - **2026-11-17**: verilate passed (2 min 15 s); hello_world, imatmul, fmatmul passed on Ara + FYP CVA6 (98 % utilisation at 128x128). riscv-tests: 89/89 scalar passed, build stopped on `sptbr`; fixed with `-Dsptbr=satp` and `make -k`. Run 2: 271/271 passed incl. all 177 vector tests; only `ma_fetch` not built (`sbadaddr`), fixed with `-Dsbadaddr=stval -Dmbadaddr=mtval`.
 - **2026-11-17**: Smoke step `apps` passed on 2_lanes (clang 23.1.5 after `pacman -Syu`; CVA6 at `caea7968`). First `verilate` failed in 2 s: 5.008's installed layout breaks `--hierarchical`; switched `VERILATOR_ROOT` to 5.008's build tree.
@@ -184,6 +228,7 @@ fmatmul passing is the check for the VMFPU change (openhwgroup cvfpu).
 
 ## Next steps
 
-1. Optional: same smoke set on `4_lanes` (default config) to check the swap at another size.
-2. Optional: build Ara's pinned Verilator 5.046 and rerun, to rule out 5.008 effects before quoting numbers.
-3. Fair scalar-vs-vector comparison: the same matmul (size, data type, -O level) on CVA6 alone and on Ara.
+1. Run `compare` on the laptop (and with `FYP_MAX_N=64`), put the numbers in the Results table.
+2. Optional: same smoke set on `4_lanes` (default config) to check the swap at another size.
+3. Optional: build Ara's pinned Verilator 5.046 and rerun, to rule out 5.008 effects before quoting numbers.
+4. Optional: run `fyp_matmul_cmp`'s scalar kernel in the CVA6-only flow (base config, 32 KB D-cache) to separate the cache effect.
