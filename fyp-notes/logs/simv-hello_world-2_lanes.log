@@ -1,0 +1,38 @@
+# 2026-11-17 01:50:37  step=simv  config=2_lanes
+# ara  57718e9  cva6 caea7968
+# Verilator 5.008 2023-03-04 rev v5.008 (mod)
+# clang version 23.1.5
+# riscv64-elf-gcc (Arch Linux Repositories) 16.2.0
+make: Entering directory '/home/BlazeringNoctal/FYP/fyp/ara/hardware'
+which: no questa-2021.3 in (/home/BlazeringNoctal/FYP/fyp/cva6/tools/verilator-v5.008/build-v5.008/bin:/home/BlazeringNoctal/.local/bin:/home/BlazeringNoctal/altera_lite/25.1std/quartus/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+Makefile:83: "Specified QuestaSim version (questa-2021.3) not found in PATH /home/BlazeringNoctal/FYP/fyp/cva6/tools/verilator-v5.008/build-v5.008/bin:/home/BlazeringNoctal/.local/bin:/home/BlazeringNoctal/altera_lite/25.1std/quartus/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl"
+build/verilator/Vara_tb_verilator  -l ram,/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world,elf
+Program header number 0 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world' low is 80000000
+Program header number 0 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world' high is 80000f23
+Program header number 1 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world' high is 800012e7
+Program header number 2 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world' high is 800012ef
+Program header number 3 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world' is not of type PT_LOAD; ignoring.
+Program header number 4 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/hello_world' is not of type PT_LOAD; ignoring.
+Set `ram TOP.ara_tb_verilator.dut.i_ara_soc.i_dram 8 0x80000000 0x100000 write with offset: 0x0 write with size: 0x12f0
+Simulation of Ara
+=================
+
+
+Simulation running, end by pressing CTRL-c.
+Ariane says Hello!
+[hw-cycles]:           0
+[2376] -Info: ara_tb_verilator.sv:51: Assertion failed in TOP.ara_tb_verilator: Core Test *** SUCCESS *** (tohost = 0)
+- /home/BlazeringNoctal/FYP/fyp/ara/hardware/tb/ara_tb_verilator.sv:54: Verilog $finish
+Received $finish() from Verilog, shutting down simulation.
+
+Simulation statistics
+=====================
+Executed cycles:  4a4
+Wallclock time:   0.226 s
+Simulation speed: 5256.64 cycles/s (5.25664 kHz)
+make: Leaving directory '/home/BlazeringNoctal/FYP/fyp/ara/hardware'
+
+real	0m0.377s
+user	0m0.276s
+sys	0m0.044s
+exit=0

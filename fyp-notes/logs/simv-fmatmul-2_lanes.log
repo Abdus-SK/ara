@@ -1,0 +1,94 @@
+# 2026-11-17 01:58:18  step=simv  config=2_lanes
+# ara  57718e9  cva6 caea7968
+# Verilator 5.008 2023-03-04 rev v5.008 (mod)
+# clang version 23.1.5
+# riscv64-elf-gcc (Arch Linux Repositories) 16.2.0
+make: Entering directory '/home/BlazeringNoctal/FYP/fyp/ara/hardware'
+which: no questa-2021.3 in (/home/BlazeringNoctal/FYP/fyp/cva6/tools/verilator-v5.008/build-v5.008/bin:/home/BlazeringNoctal/.local/bin:/home/BlazeringNoctal/altera_lite/25.1std/quartus/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl)
+Makefile:83: "Specified QuestaSim version (questa-2021.3) not found in PATH /home/BlazeringNoctal/FYP/fyp/cva6/tools/verilator-v5.008/build-v5.008/bin:/home/BlazeringNoctal/.local/bin:/home/BlazeringNoctal/altera_lite/25.1std/quartus/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl"
+build/verilator/Vara_tb_verilator  -l ram,/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul,elf
+Program header number 0 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' low is 80000000
+Program header number 0 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' high is 800019e7
+Program header number 1 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' high is 800819ff
+Program header number 2 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' high is 80081eef
+Program header number 3 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' high is 80081ef7
+Program header number 4 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' is not of type PT_LOAD; ignoring.
+Program header number 5 in `/home/BlazeringNoctal/FYP/fyp/ara/apps/bin/fmatmul' is not of type PT_LOAD; ignoring.
+Set `ram TOP.ara_tb_verilator.dut.i_ara_soc.i_dram 8 0x80000000 0x100000 write with offset: 0x0 write with size: 0x81ef8
+Simulation of Ara
+=================
+
+
+Simulation running, end by pressing CTRL-c.
+
+=============
+=  FMATMUL  =
+=============
+
+
+
+------------------------------------------------------------
+Calculating a (4 x 4) x (4 x 4) matrix multiplication...
+------------------------------------------------------------
+
+Calculating fmatmul...
+The execution took 516 cycles.
+The performance is 0.248062 FLOP/cycle (6.201550% utilization).
+
+------------------------------------------------------------
+Calculating a (8 x 8) x (8 x 8) matrix multiplication...
+------------------------------------------------------------
+
+Calculating fmatmul...
+The execution took 833 cycles.
+The performance is 1.229292 FLOP/cycle (30.732292% utilization).
+
+------------------------------------------------------------
+Calculating a (16 x 16) x (16 x 16) matrix multiplication...
+------------------------------------------------------------
+
+Calculating fmatmul...
+The execution took 3230 cycles.
+The performance is 2.536223 FLOP/cycle (63.405575% utilization).
+
+------------------------------------------------------------
+Calculating a (32 x 32) x (32 x 32) matrix multiplication...
+------------------------------------------------------------
+
+Calculating fmatmul...
+The execution took 18309 cycles.
+The performance is 3.579442 FLOP/cycle (89.486046% utilization).
+
+------------------------------------------------------------
+Calculating a (64 x 64) x (64 x 64) matrix multiplication...
+------------------------------------------------------------
+
+Calculating fmatmul...
+The execution took 139246 cycles.
+The performance is 3.765193 FLOP/cycle (94.129814% utilization).
+
+------------------------------------------------------------
+Calculating a (128 x 128) x (128 x 128) matrix multiplication...
+------------------------------------------------------------
+
+Calculating fmatmul...
+The execution took 1064284 cycles.
+The performance is 3.940963 FLOP/cycle (98.524078% utilization).
+Verifying result...
+Passed.
+[hw-cycles]:           0
+[3467740] -Info: ara_tb_verilator.sv:51: Assertion failed in TOP.ara_tb_verilator: Core Test *** SUCCESS *** (tohost = 0)
+- /home/BlazeringNoctal/FYP/fyp/ara/hardware/tb/ara_tb_verilator.sv:54: Verilog $finish
+Received $finish() from Verilog, shutting down simulation.
+
+Simulation statistics
+=====================
+Executed cycles:  1a74ee
+Wallclock time:   493.807 s
+Simulation speed: 3511.23 cycles/s (3.51123 kHz)
+make: Leaving directory '/home/BlazeringNoctal/FYP/fyp/ara/hardware'
+
+real	8m13.908s
+user	8m11.173s
+sys	0m0.128s
+exit=0
